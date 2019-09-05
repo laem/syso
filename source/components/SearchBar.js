@@ -1,54 +1,88 @@
 import withSitePaths from 'Components/utils/withSitePaths'
 import { encodeRuleName, parentName } from 'Engine/rules.js'
-import Fuse from 'fuse.js'
-import { compose, pick, sortBy } from 'ramda'
+import { compose, pick, take, sortBy } from 'ramda'
 import React from 'react'
 import Highlighter from 'react-highlight-words'
 import { withTranslation } from 'react-i18next'
 import { Link, Redirect } from 'react-router-dom'
-import Select from 'react-select'
 import { capitalise0 } from '../utils'
-import searchWeights from './searchWeights'
+import Worker from 'worker-loader!./SearchBar.worker.js'
+
+const worker = new Worker()
 
 class SearchBar extends React.Component {
-	componentDidMount() {
-		this.inputElement.focus()
-	}
-	UNSAFE_componentWillMount() {
-		let { rules } = this.props
-		var options = {
-			keys: searchWeights
-		}
-		this.fuse = new Fuse(
-			rules.map(pick(['title', 'espace', 'description', 'name', 'dottedName'])),
-			options
-		)
-	}
 	state = {
 		selectedOption: null,
-		inputValue: null
+		input: '',
+		results: []
 	}
-	handleChange = selectedOption => {
-		this.setState({ selectedOption })
+	componentDidMount() {
+		worker.postMessage({
+			rules: this.props.rules.map(
+				pick(['title', 'espace', 'description', 'name', 'dottedName'])
+			)
+		})
+
+		worker.onmessage = ({ data: results }) => this.setState({ results })
 	}
-	renderOption = ({ title, dottedName }) => (
-		<span>
-			<Highlighter
-				searchWords={[this.state.inputValue]}
-				textToHighlight={title}
-			/>
-			<span style={{ opacity: 0.6, fontSize: '75%', marginLeft: '.6em' }}>
-				<Highlighter
-					searchWords={[this.state.inputValue]}
-					textToHighlight={dottedName}
-				/>
-			</span>
-		</span>
-	)
-	filterOptions = (options, filter) => this.fuse.search(filter)
+	renderOptions = rules => {
+		let options =
+			(rules && sortBy(rule => rule.dottedName, rules)) ||
+			take(5)(this.state.results)
+		return <ul>{options.map(option => this.renderOption(option))}</ul>
+	}
+	renderOption = option => {
+		let { title, dottedName, name } = option
+		return (
+			<li
+				key={dottedName}
+				css={`
+					padding: 0.4rem;
+					border-radius: 0.3rem;
+					:hover {
+						background: var(--colour);
+						color: var(--textColour);
+					}
+					:hover a {
+						color: var(--textColour);
+					}
+				`}
+				onClick={() => this.setState({ selectedOption: option })}>
+				<div
+					style={{
+						fontWeight: '300',
+						fontSize: '85%',
+						lineHeight: '.9em'
+					}}>
+					<Highlighter
+						searchWords={[this.state.input]}
+						textToHighlight={
+							parentName(dottedName)
+								? parentName(dottedName)
+										.split(' . ')
+										.map(capitalise0)
+										.join(' - ')
+								: ''
+						}
+					/>
+				</div>
+				<Link
+					to={
+						this.props.sitePaths.documentation.index +
+						'/' +
+						encodeRuleName(dottedName)
+					}>
+					<Highlighter
+						searchWords={[this.state.input]}
+						textToHighlight={title || capitalise0(name)}
+					/>
+				</Link>
+			</li>
+		)
+	}
 	render() {
 		let { i18n, rules } = this.props,
-			{ selectedOption } = this.state
+			{ selectedOption, input, results } = this.state
 
 		if (selectedOption != null) {
 			this.props.finally && this.props.finally()
@@ -64,53 +98,26 @@ class SearchBar extends React.Component {
 		}
 		return (
 			<>
-				<Select
-					value={selectedOption && selectedOption.dottedName}
-					onChange={this.handleChange}
-					onInputChange={inputValue => this.setState({ inputValue })}
-					valueKey="dottedName"
-					labelKey="title"
-					options={rules}
-					filterOptions={this.filterOptions}
-					optionRenderer={this.renderOption}
+				<input
+					type="text"
+					value={input}
 					placeholder={i18n.t('Entrez des mots clefs ici')}
-					noResultsText={i18n.t('noresults', {
-						defaultValue: "Nous n'avons rien trouvé…"
-					})}
-					ref={el => {
-						this.inputElement = el
+					onChange={e => {
+						let input = e.target.value
+						this.setState({
+							input
+						})
+						if (input.length > 2) worker.postMessage({ input })
 					}}
 				/>
-				{this.props.showDefaultList && !this.state.inputValue && (
-					<ul>
-						{sortBy(rule => rule.dottedName, rules).map(rule => (
-							<li style={{ margin: '1em' }} key={rule.dottedName}>
-								<div
-									style={{
-										color: '#333',
-										fontWeight: '300',
-										fontSize: '90%',
-										lineHeight: '.9em'
-									}}>
-									{parentName(rule.dottedName)
-										? parentName(rule.dottedName)
-												.split(' . ')
-												.map(capitalise0)
-												.join(' - ')
-										: null}
-								</div>
-								<Link
-									to={
-										this.props.sitePaths.documentation.index +
-										'/' +
-										encodeRuleName(rule.dottedName)
-									}>
-									{rule.title || capitalise0(rule.name)}
-								</Link>
-							</li>
-						))}
-					</ul>
-				)}
+				{input.length > 2 &&
+					!results.length &&
+					i18n.t('noresults', {
+						defaultValue: "Nous n'avons rien trouvé…"
+					})}
+				{this.props.showDefaultList && !this.state.input
+					? this.renderOptions(rules)
+					: this.renderOptions()}
 			</>
 		)
 	}
