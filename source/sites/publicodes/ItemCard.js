@@ -1,27 +1,39 @@
-import { emoji, React } from 'Components'
-import HumanCarbonImpact from './HumanCarbonImpact'
-import withTarget from './withTarget'
+import { emoji } from 'Components'
+import React, { useContext } from 'react'
+import HumanImpact from './HumanImpact'
+import { useSelector } from 'react-redux'
+import { StoreContext } from './StoreContext'
+import {
+	analysisWithDefaultsSelector,
+	nextStepsSelector
+} from 'Selectors/analyseSelectors'
 
-export default withFigure => {
-	let decorator = withFigure ? withTarget : a => a
-	return decorator(
-		({
-			dottedName,
-			formule,
-			title,
-			icônes,
-			nodeValue,
-			scenario,
-			nextSteps,
-			foldedSteps
-		}) => (
+export default ({ large = false, dottedName }) => {
+	const {
+		analysis: { targets },
+		foldedSteps,
+		nextSteps
+	} = useSelector(state => ({
+		analysis: analysisWithDefaultsSelector(state),
+		foldedSteps: state.conversationSteps.foldedSteps,
+		nextSteps: nextStepsSelector(state)
+	}))
+	const {
+		state: { scenario }
+	} = useContext(StoreContext)
+
+	let { formule, icônes, nodeValue, title } = targets.find(
+		target => target.dottedName === dottedName
+	)
+
+	return (
+		<div css="display: flex; justify-content: center;">
 			<div
 				key={dottedName}
 				css={`
-					font-size: 120%;
-					padding: ${withFigure ? '1rem 0 0' : '1rem'};
-					width: ${withFigure ? '18rem' : '10rem'};
-					min-height: 7em;
+					font-size: ${large ? '120%' : '115%'};
+					padding: 0;
+					width: ${large ? '18rem' : '10rem'};
 					position: relative;
 					display: flex;
 					align-items: center;
@@ -46,38 +58,30 @@ export default withFigure => {
 							0px 1px 10px 0px rgba(41, 117, 209, 0.12);
 					}
 				`}>
-				<div css="width: 100%; img { font-size: 150%}}">
-					{icônes && emoji(icônes + ' ')}
+				<div
+					css={`
+						padding: 1rem;
+						padding-bottom: 0.8rem;
+						width: 100%;
+						${!large ? 'min-height: 7rem;' : ''}
+					`}>
+					<div css="width: 100%; img { font-size: 150%}}; line-height: 2rem">
+						{icônes && emoji(icônes + ' ')}
+					</div>
+					<span css="width: 100%">{title}</span>
 				</div>
-				<span css="width: 100%">{title}</span>
-				{withFigure && (
-					<>
-						<div css="visibility: hidden">placeholder</div>
-						<div
-							css={`
-								border-bottom-left-radius: 0.3rem;
-								border-bottom-right-radius: 0.3rem;
-								bottom: 0;
-								left: 0;
-								width: 100%;
-								background: var(--colour);
-								color: white;
-								font-size: 80%;
-							`}>
-							<HumanCarbonImpact
-								{...{
-									nodeValue,
-									formule,
-									dottedName,
-									scenario,
-									nextSteps,
-									foldedSteps
-								}}
-							/>
-						</div>
-					</>
-				)}
+				<HumanImpact
+					{...{
+						large,
+						nodeValue,
+						formule,
+						dottedName,
+						scenario,
+						nextSteps,
+						foldedSteps
+					}}
+				/>
 			</div>
-		)
+		</div>
 	)
 }

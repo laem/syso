@@ -11,11 +11,6 @@ import { connect } from 'react-redux'
 import { flatRulesSelector } from 'Selectors/analyseSelectors'
 import CarbonImpact from './CarbonImpact'
 import ItemCard from './ItemCard'
-import withTarget from './withTarget'
-
-let CarbonImpactWithData = withTarget(CarbonImpact)
-
-let ItemCardWithData = ItemCard(true)
 
 export default connect(state => ({
 	rules: flatRulesSelector(state),
@@ -47,12 +42,12 @@ export default connect(state => ({
 					}
 					targets={
 						<>
-							<ItemCardWithData />
+							<ItemCard large dottedName={rule.dottedName} />
 							{rule.period === 'flexible' && <PeriodBlock />}
 						</>
 					}
 				/>
-				<CarbonImpactWithData />
+				<CarbonImpact />
 				<ShareButton
 					text="Mesure ton impact sur Futur.eco !"
 					url={'https://' + window.location.hostname + props.match.url}

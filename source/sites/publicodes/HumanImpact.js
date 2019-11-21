@@ -19,7 +19,7 @@ let findPeriod = (scenario, nodeValue) =>
 		([, limit]) => limit <= Math.abs(nodeValue)
 	)
 
-let humanCarbonImpactData = (scenario, nodeValue) => {
+let humanImpactData = (scenario, nodeValue) => {
 	let [closestPeriod, closestPeriodValue] = findPeriod(scenario, nodeValue),
 		factor = Math.round(nodeValue / closestPeriodValue),
 		closestPeriodLabel = closestPeriod.startsWith('demi')
@@ -30,6 +30,7 @@ let humanCarbonImpactData = (scenario, nodeValue) => {
 }
 
 export default ({
+	large,
 	scenario,
 	nodeValue,
 	formule,
@@ -37,18 +38,23 @@ export default ({
 	nextSteps,
 	foldedSteps
 }) => {
-	let { closestPeriodLabel, closestPeriod, factor } = humanCarbonImpactData(
+	let { closestPeriodLabel, closestPeriod, factor } = humanImpactData(
 		scenario,
 		nodeValue
 	)
 	return (
 		<div
 			css={`
-				border-radius: 6px;
 				background: var(--colour);
-				padding: 1em;
-				margin: 0 auto;
+				padding: ${large ? '1rem' : '.1rem'};
+				margin: ${large ? '0.4rem auto 0' : '0 auto'};
 				color: var(--textColour);
+				border-bottom-left-radius: 0.3rem;
+				border-bottom-right-radius: 0.3rem;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				font-size: 80%;
 			`}>
 			{closestPeriodLabel === 'négligeable' ? (
 				<span>Impact négligeable {emoji('😎')}</span>
@@ -56,8 +62,7 @@ export default ({
 				<>
 					<div
 						css={`
-							font-size: 220%;
-							margin-bottom: 0.25rem;
+							font-size: ${large ? '220%' : '100%'};
 						`}>
 						{factor +
 							' ' +
@@ -67,14 +72,18 @@ export default ({
 								? 's'
 								: '')}
 					</div>
-					de&nbsp;
-					<Link css="color: inherit" to="/scénarios">
-						crédit carbone personnel
-					</Link>
+					{large && (
+						<div css="margin-top: 0.25rem">
+							de&nbsp;
+							<Link css="color: inherit" to="/scénarios">
+								crédit carbone personnel
+							</Link>
+						</div>
+					)}
 				</>
 			)}
 
-			{nextSteps?.length > 0 && (
+			{large && nextSteps?.length > 0 && (
 				<FirstEstimationStamp foldedSteps={foldedSteps} />
 			)}
 		</div>
