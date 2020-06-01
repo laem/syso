@@ -16,12 +16,12 @@ const rewrite = basename => ({
 })
 
 app.get('/', function(req, res) {
-	res.send(`<a href="/publicodes">publicodes</a>`)
+	res.redirect('/futureco/journée')
 })
 
 app.use(
 	history({
-		rewrites: ['infrance', 'mon-entreprise', 'publicodes'].map(rewrite)
+		rewrites: ['infrance', 'mon-entreprise', 'futureco'].map(rewrite)
 	})
 )
 

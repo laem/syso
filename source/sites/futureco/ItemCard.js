@@ -1,21 +1,20 @@
 import React from 'react'
 import emoji from 'react-easy-emoji'
 import HumanCarbonImpact from './HumanCarbonImpact'
-import withTarget from './withTarget'
 
-export default (withFigure) => {
-	let decorator = withFigure ? withTarget : (a) => a
-	return decorator(
-		({
-			dottedName,
-			formule,
-			title,
-			icônes,
-			nodeValue,
-			scenario,
-			nextSteps,
-			foldedSteps,
-		}) => (
+export default function ItemCard({
+	dottedName,
+	formule,
+	title,
+	icônes,
+	nodeValue,
+	scenario,
+	nextSteps,
+	foldedSteps,
+}) {
+	let withFigure = nodeValue != undefined
+	return (
+		<div css="display: flex; justify-content: center;">
 			<div
 				key={dottedName}
 				css={`
@@ -76,20 +75,22 @@ export default (withFigure) => {
 								font-size: 80%;
 							`}
 						>
-							<HumanCarbonImpact
-								{...{
-									nodeValue,
-									formule,
-									dottedName,
-									scenario,
-									nextSteps,
-									foldedSteps,
-								}}
-							/>
+							{scenario && (
+								<HumanCarbonImpact
+									{...{
+										nodeValue,
+										formule,
+										dottedName,
+										scenario,
+										nextSteps,
+										foldedSteps,
+									}}
+								/>
+							)}
 						</div>
 					</>
 				)}
 			</div>
-		)
+		</div>
 	)
 }

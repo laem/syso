@@ -20,7 +20,7 @@ module.exports.default = {
 		extensions: ['.js', '.ts', '.tsx'],
 	},
 	entry: {
-		publicodes: './source/sites/publicodes/entry.js',
+		futureco: './source/sites/futureco/entry.js',
 	},
 	output: {
 		path: path.resolve('./dist/'),
@@ -111,6 +111,6 @@ module.exports.HTMLPlugins = ({ injectTrackingScript = false } = {}) => [
 		title: "Futureco 🔥 – L'impact climat de vos gestes quotidiens",
 		description:
 			"La catastrophe climatique n'est plus qu'une menace lointaine, c'est une actualité. Tous vos gestes et consommations quotidiennes impactent le climat. À vous de jouer !",
-		filename: 'publicodes.html',
+		filename: 'futureco.html',
 	}),
 ]

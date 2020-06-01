@@ -37,6 +37,7 @@ type SetSimulationConfigAction = {
 	type: 'SET_SIMULATION'
 	url: string
 	config: SimulationConfig
+	situation: object | undefined
 }
 
 type DeletePreviousSimulationAction = {
@@ -95,11 +96,10 @@ export const setSituationBranch = (id: number) =>
 		id
 	} as const)
 
-export const setSimulationConfig = (config: Object): ThunkResult<void> => (
-	dispatch,
-	getState,
-	{ history }
-): void => {
+export const setSimulationConfig = (
+	config: Object,
+	situation: object | undefined
+): ThunkResult<void> => (dispatch, getState, { history }): void => {
 	if (getState().simulation?.config === config) {
 		return
 	}
@@ -107,7 +107,8 @@ export const setSimulationConfig = (config: Object): ThunkResult<void> => (
 	dispatch({
 		type: 'SET_SIMULATION',
 		url,
-		config
+		config,
+		situation
 	})
 }
 

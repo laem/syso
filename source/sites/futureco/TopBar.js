@@ -15,6 +15,7 @@ export default withRouter(({ location }) => {
 			location.pathname
 		)
 
+	if (location.pathname.includes('journée')) return null
 	return (
 		<section
 			css={`

@@ -1,7 +1,32 @@
-import { collectMissingVariablesByTarget, getNextSteps } from 'Engine/generateQuestions'
-import { collectDefaults, disambiguateExampleSituation, enrichRule, findRuleByDottedName, splitName } from 'Engine/rules'
+import {
+	collectMissingVariablesByTarget,
+	getNextSteps
+} from 'Engine/generateQuestions'
+import {
+	collectDefaults,
+	disambiguateExampleSituation,
+	enrichRule,
+	findRuleByDottedName,
+	splitName
+} from 'Engine/rules'
 import { analyse, analyseMany, parseAll } from 'Engine/traverse'
-import { add, difference, equals, head, intersection, isNil, last, length, mergeDeepWith, negate, pick, pipe, sortBy, takeWhile, zipWith } from 'ramda'
+import {
+	add,
+	difference,
+	equals,
+	head,
+	intersection,
+	isNil,
+	last,
+	length,
+	mergeDeepWith,
+	negate,
+	pick,
+	pipe,
+	sortBy,
+	takeWhile,
+	zipWith
+} from 'ramda'
 import { useSelector } from 'react-redux'
 import { RootState, Simulation } from 'Reducers/rootReducer'
 import { createSelector, createSelectorCreator, defaultMemoize } from 'reselect'
@@ -14,8 +39,10 @@ let configSelector = (state: RootState) =>
 	(state.simulation && state.simulation.config) || {}
 
 // We must here compute parsedRules, flatRules, analyse which contains both targets and cache objects
-export let flatRulesSelector = (state: RootState) => 
-Object.entries(state.rules).map(([dottedName, rule]) => ({ ...rule, dottedName })).map(enrichRule)
+export let flatRulesSelector = (state: RootState) =>
+	Object.entries(state.rules)
+		.map(([dottedName, rule]) => ({ ...rule, dottedName }))
+		.map(enrichRule)
 
 export let parsedRulesSelector = createSelector([flatRulesSelector], rules =>
 	parseAll(rules)
@@ -85,7 +112,9 @@ let validatedStepsSelector = createSelector(
 )
 export const defaultUnitsSelector = (state: RootState) =>
 	state.simulation?.defaultUnits || []
+
 let branchesSelector = (state: RootState) => configSelector(state).branches
+
 let configSituationSelector = (state: RootState) =>
 	configSelector(state).situation || {}
 

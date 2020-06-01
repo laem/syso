@@ -204,7 +204,7 @@ function simulation(
 			config,
 			url,
 			hiddenControls: [],
-			situation: {},
+			situation: action.situation ?? {},
 			defaultUnits: config['unités par défaut'] || ['€/mois']
 		}
 	}

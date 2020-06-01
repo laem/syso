@@ -1,4 +1,3 @@
-import { encodeRuleName, findRuleByDottedName } from 'Engine/rules'
 import { apply, concat, has, partition, pick, pipe } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import emoji from 'react-easy-emoji'
@@ -10,8 +9,7 @@ import byCategory from './catégories'
 import Worker from 'worker-loader!./Suggestions.worker.js'
 const worker = new Worker()
 import Search from './Search'
-
-let ItemCardWithoutData = ItemCard()
+import { encodeRuleName, findRuleByDottedName } from 'Engine/rules'
 
 export default function Suggestions() {
 	const rules = useSelector(flatRulesSelector)
@@ -97,7 +95,7 @@ const CategoryView = ({ exposedRules }) => {
 			`}
 		>
 			{categories.map(([category, rules], i) => (
-				<li>
+				<li key={i}>
 					<div>{category}</div>
 					<RuleList {...{ rules, exposedRules: rules }} />
 					{i === 0 && (
@@ -125,7 +123,7 @@ const RuleList = ({ rules, exposedRules }) => (
 			return (
 				<li css="list-style-type: none" key={rule.dottedName}>
 					<Link
-						to={'/simulateur/' + encodeRuleName(rule.dottedName)}
+						to={'/journée/simulateur/' + encodeRuleName(rule.dottedName)}
 						css={`
 							text-decoration: none !important;
 							:hover {
@@ -133,7 +131,7 @@ const RuleList = ({ rules, exposedRules }) => (
 							}
 						`}
 					>
-						<ItemCardWithoutData {...rule} />
+						<ItemCard {...rule} />
 					</Link>
 				</li>
 			)

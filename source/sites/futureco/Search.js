@@ -6,7 +6,9 @@ export default ({ setInput, input }) => (
 		css={`
 			display: flex;
 			align-items: flex-end;
-		`}>
+			justify-content: center;
+		`}
+	>
 		<input
 			css={`
 				display: inline-block;
@@ -29,7 +31,8 @@ export default ({ setInput, input }) => (
 					width: 1.6em !important;
 					height: 1.6em !important;
 				}
-			`}>
+			`}
+		>
 			{emoji('🔍')}
 		</span>
 	</div>

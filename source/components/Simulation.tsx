@@ -1,5 +1,4 @@
 import { T } from 'Components'
-import Controls from 'Components/Controls'
 import Conversation, {
 	ConversationProps
 } from 'Components/conversation/Conversation'
@@ -59,7 +58,6 @@ export default function Simulation({
 						</div>
 						<section className="ui__ full-width lighter-bg">
 							<div className="ui__ container">
-								<Controls />
 								<Conversation
 									customEnd={customEnd}
 									customEndMessages={customEndMessages}
