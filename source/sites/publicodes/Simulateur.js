@@ -10,23 +10,21 @@ import { Helmet } from 'react-helmet'
 import { useDispatch, useSelector } from 'react-redux'
 import { flatRulesSelector } from 'Selectors/analyseSelectors'
 import CarbonImpact from './CarbonImpact'
-import ItemCard from './ItemCard'
 import withTarget from './withTarget'
+import Chart from './chart/index.js'
 
 let CarbonImpactWithData = withTarget(CarbonImpact)
 
-let ItemCardWithData = ItemCard(true)
-
-const Simulateur = props => {
+const Simulateur = (props) => {
 	const objectif = props.match.params.name,
 		decoded = decodeRuleName(objectif),
 		rules = useSelector(flatRulesSelector),
 		rule = findRuleByDottedName(rules, decoded),
 		dispatch = useDispatch(),
 		config = {
-			objectifs: [decoded]
+			objectifs: [decoded],
 		},
-		configSet = useSelector(state => state.simulation?.config)
+		configSet = useSelector((state) => state.simulation?.config)
 	useEffect(() => dispatch(setSimulationConfig(config)), [])
 
 	if (!configSet) return null
@@ -50,14 +48,14 @@ const Simulateur = props => {
 						<EndingCongratulations />
 					)
 				}
-				targets={
+				targets={<>{rule.period === 'flexible' && <PeriodBlock />}</>}
+				explanations={
 					<>
-						<ItemCardWithData />
-						{rule.period === 'flexible' && <PeriodBlock />}
+						<CarbonImpactWithData />
+						<Chart />
 					</>
 				}
 			/>
-			<CarbonImpactWithData />
 			<ShareButton
 				text="Mesure ton impact sur Futur.eco !"
 				url={'https://' + window.location.hostname + props.match.url}

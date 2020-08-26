@@ -2,3 +2,8 @@
   from = "/*"
   to = "/publicodes.html"
   status = 200
+
+[[redirects]]
+  from = "/data/*"
+  to = "https://version0--ecolab-data.netlify.app/:splat"
+  status = 200

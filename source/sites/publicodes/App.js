@@ -1,7 +1,7 @@
 import Route404 from 'Components/Route404'
 import RulePage from 'Components/RulePage'
 import React, { Component, Suspense } from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Link, Route, Switch } from 'react-router-dom'
 import 'Ui/index.css'
 import Provider from '../../Provider'
 import RulesList from '../mon-entreprise.fr/pages/Documentation/RulesList'
@@ -12,7 +12,6 @@ import Scenarios from './Scenarios'
 import Simulateur from './Simulateur'
 import sitePaths from './sitePaths'
 import { StoreProvider } from './StoreContext'
-import TopBar from './TopBar'
 
 let Studio = React.lazy(() => import('./Studio'))
 
@@ -21,13 +20,28 @@ class App extends Component {
 		return (
 			<Provider
 				basename="publicodes"
-				rulesURL="https://futureco-data.netlify.app/co2.json"
+				rulesURL="/data/co2.json"
 				sitePaths={sitePaths()}
 				reduxMiddlewares={[]}
 			>
 				<StoreProvider>
+					<div css="background: yellow; text-align: center; color: black; ">
+						Attention, démo ! Les calculs sont loin d'être validés.
+					</div>
 					<div className="ui__ container">
-						<TopBar />
+						<nav css="display: flex; justify-content: center; margin-top: .6rem">
+							<Link to="/">
+								<img
+									css={`
+										height: 3rem;
+										@media (max-width: 800px) {
+											height: 2rem;
+										}
+									`}
+									src="https://ecolab-transport.netlify.com/images/ecolab.png"
+								/>
+							</Link>
+						</nav>
 						<Switch>
 							<Route exact path="/" component={Landing} />
 							<Route path="/documentation/:name+" component={RulePage} />
